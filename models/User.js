@@ -37,7 +37,10 @@ userSchema.virtual('friendCount').get(function() {
     return this.friends.length;
 });
 
-const User = model('user', userSchema);
+// Error handler function to be called when an error occurs when trying to save a document
+const handleError = (err) => console.error(err);
+
+const User = mongoose.model('user', userSchema);
 
 module.exports = User;
 
