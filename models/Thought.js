@@ -22,6 +22,8 @@ const thoughtSchema = new mongoose.Schema({
 
     //     reactions (These are like replies)
         // Array of nested documents created with the reactionSchema
-})
+});
+
+const Thought = mongoose.model('thought', thoughtSchema);
 
 module.exports = Thought
