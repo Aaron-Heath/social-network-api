@@ -58,4 +58,39 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/', async (req, res) => {
+    // Update single thought
+    try {
+        const updatedThought = await Thought.findOneAndUpdate(
+            {_id: req.body.id},
+            {$set: req.body},
+            {new: true}
+        );
+
+        if(!updatedThought) {
+            return res.status(404).json({message: "No record found."});
+        }
+
+        return res.json(updatedThought);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).json({message: "Something went wrong."});
+    }
+});
+
+router.delete('/', async (req,res) => {
+    try {
+        const deletedThought = await Thought.findOneAndDelete({_id: req.body.id});
+
+        if(!deletedThought) {
+            return res.status(404).json({message:"No record found"});
+        }
+
+        res.json(deletedThought);
+    } catch (err) {
+        console.log(err);
+        res.json({message:"Something went wrong."});
+    }
+});
+
 module.exports = router;
