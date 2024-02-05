@@ -55,4 +55,46 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/', async (req,res) => {
+    // Update existing user
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            {_id: req.body.id},
+            {$set: req.body},
+            {runValidators: true,new:true}
+        );
+
+            if(!updatedUser) {
+                return res.status(404).json({message: "No record found"});
+            }
+
+            res.json(updatedUser);
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: "Something went wrong."});
+    }
+});
+
+router.delete('/', async (req, res) => {
+    // Delete user by id
+    try {
+        const deletedUser = await User.findOneAndDelete({
+            _id: req.body.id
+        });
+
+        if(!deletedUser) {
+            return req.status(404).json({message:"No record found"});
+        }
+
+        return res.json(deletedUser);
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({message: "Something went wrong."})
+    }
+
+
+})
+
 module.exports = router;
