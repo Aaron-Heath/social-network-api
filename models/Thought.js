@@ -24,6 +24,12 @@ const thoughtSchema = new mongoose.Schema({
         // Array of nested documents created with the reactionSchema
 });
 
+thoughtSchema.methods.getCreationDate = function() {
+    // return format(new Date(this.createdAt), "MM/dd/yyyy ppp");
+    const date = new Date(this.createdAt);
+    return date.toLocaleDateString("en-us") + " " + date.toLocaleTimeString("en-us");
+}
+
 const Thought = mongoose.model('thought', thoughtSchema);
 
 module.exports = Thought
