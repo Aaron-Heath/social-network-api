@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const mongoose = require('mongoose');
 const { User, Thought } = require('../../models')
 
 router.get('/', async (req,res) => {
@@ -13,6 +14,29 @@ router.get('/', async (req,res) => {
     }
     
 });
+
+router.get('/:userId', async (req,res) => {
+    // Get user by Id
+    try{
+        const user = await User.findOne({
+            _id: req.params.userId
+        })
+        .populate('thoughts')
+        .populate('friends');
+
+        if(!user) {
+            res.status(400).json({message: "No record found."});
+            return
+        }
+
+        res.status(200).json(user);
+
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({message: "Something went wrong"});
+    }
+    
+})
 
 router.post('/', async (req, res) => {
     // Create a new user
