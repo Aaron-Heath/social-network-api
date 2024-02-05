@@ -28,7 +28,6 @@ const thoughtSchema = new mongoose.Schema({
 });
 
 function getFormattedCreation(date) {
-    // return format(new Date(this.createdAt), "MM/dd/yyyy ppp");
     return date.toLocaleDateString("en-us") + " " + date.toLocaleTimeString("en-us");
 }
 
