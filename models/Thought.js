@@ -12,21 +12,23 @@ const thoughtSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
         // Use a getter method to format the timestamp on query
+        get: getFormattedCreation
     },
     username: {
         type: String,
         ref: 'user',
         required: true
     },
-    reactions: [reactionSchema]
-
-    //     reactions (These are like replies)
-        // Array of nested documents created with the reactionSchema
+    reactions: [reactionSchema],
+},
+{
+    toJSON: {
+        getters: true
+    }
 });
 
-thoughtSchema.methods.getCreationDate = function() {
+function getFormattedCreation(date) {
     // return format(new Date(this.createdAt), "MM/dd/yyyy ppp");
-    const date = new Date(this.createdAt);
     return date.toLocaleDateString("en-us") + " " + date.toLocaleTimeString("en-us");
 }
 
