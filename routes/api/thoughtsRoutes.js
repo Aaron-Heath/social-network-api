@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { User, Thought } = require('../../models');
+const { User, Thought, Reaction } = require('../../models');
 
 router.get('/', async (req, res) => {
     try {
@@ -92,5 +92,63 @@ router.delete('/', async (req,res) => {
         res.json({message:"Something went wrong."});
     }
 });
+
+router.post('/:thoughtId/reactions', async (req,res) => {
+    // Create a reaction stored in a single thought's reactions array field
+    // {
+    //     reactionBody: "Text",
+    //     username: "username",
+    // }
+    try{
+        const reaction = await Reaction.create({
+            reactionBody: req.body.reactionBody,
+            username: req.body.username
+        });
+        const thought = await Thought.findOneAndUpdate(
+            {_id: req.params.thoughtId},
+            { $addToSet: {reactions: reaction._id} },
+            {new: true}
+        );
+
+        if(!thought) {
+            return res.status(404).json({message: 'Reaction created, but no thought found'});
+        }
+        res.json({message: "Reaction created!"});
+
+    } catch (err) {
+        console.log(err);
+        return res
+        .status(500)
+        .json({message:err})
+    }
+
+
+})
+
+router.delete("/:thoughtId/reactions", async (req,res) => {
+    // Pull and remove a reaction by the reaction's reactionId
+    try {
+        const reaction = await Reaction.findByIdAndDelete({_id: req.body.reactionId});
+
+        if(!reaction) {
+            return res.status(404).json({message:"No reaction found with that id"});
+        }
+
+        const thought = await Thought.findOneAndUpdate(
+            {_id: req.params.thoughtId},
+            {$pull: {reactions: reaction._id}},
+            {new: true}
+        );
+
+        if(!thought) {
+            return res.status(404).json({message:"Reaction deleted. No thought found"});
+        }
+
+        return res.json({message: "Reaction deleted!"});
+
+    } catch (err) {
+        return res.status(500).json({message: err});
+    }
+})
 
 module.exports = router;

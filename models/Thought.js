@@ -19,7 +19,12 @@ const thoughtSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
-    reactions: [reactionSchema],
+    reactions: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'reaction'
+        }
+    ],
 },
 {
     toJSON: {
