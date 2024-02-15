@@ -50,6 +50,10 @@ router.post('/', async (req, res) => {
         // Push thought to user
         const user = await User.findOneAndUpdate({_id: req.body.userId},
             {$push: {thoughts: newThought._id}});
+
+        if(!user) {
+            return res.status(404).json({message: "Thought created but no user found"});
+        }
         
         return res.json(newThought);
     } catch(err) {
