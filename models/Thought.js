@@ -12,16 +12,30 @@ const thoughtSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
         // Use a getter method to format the timestamp on query
+        get: getFormattedCreation
     },
     username: {
         type: String,
         ref: 'user',
         required: true
     },
-    reactions: [reactionSchema]
+    reactions: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'reaction'
+        }
+    ],
+},
+{
+    toJSON: {
+        getters: true
+    }
+});
 
-    //     reactions (These are like replies)
-        // Array of nested documents created with the reactionSchema
-})
+function getFormattedCreation(date) {
+    return date.toLocaleDateString("en-us") + " " + date.toLocaleTimeString("en-us");
+}
+
+const Thought = mongoose.model('thought', thoughtSchema);
 
 module.exports = Thought
