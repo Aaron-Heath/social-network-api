@@ -68,11 +68,11 @@ router.put('/', async (req,res) => {
                 return res.status(404).json({message: "No record found"});
             }
 
-            res.json(updatedUser);
+            return res.json(updatedUser);
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({message: "Something went wrong."});
+        return res.status(500).json({message: "Something went wrong."});
     }
 });
 
@@ -93,8 +93,53 @@ router.delete('/', async (req, res) => {
         console.log(err);
         return res.status(500).json({message: "Something went wrong."})
     }
+});
+
+router.post('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const friend = await User.findOne({_id: req.params.friendId});
+        if(!friend) {
+            return res.status(404).json({message: "Record not found"});
+        }
+
+        const user = await User.findOneAndUpdate(
+                {_id: req.params.userId},
+                {$addToSet: {friends: friend._id}},
+                {new: true}
+            );
+
+        if(!user) {
+            return res.status(404).json({message: "Record not found"});
+        }
+
+        return res.json({message:"Friend added"});
 
 
-})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error});
+    }
+});
+
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            {_id: req.params.userId},
+            {$pull: {friends: req.params.friendId}},
+            {new: true}
+        );
+
+        if (!user) {
+            return res.status(404).json({message: "No record found"});
+        }
+
+        return res.json({message: "Friend removed!"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message:error});
+    }
+});
+
+
 
 module.exports = router;
